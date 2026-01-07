@@ -1,0 +1,141 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define FILE_NAME "bank_data.dat"
+
+/* Structure definition */
+struct Account {
+    int accountNumber;
+    char name[50];
+    float balance;
+};
+
+/* Function prototypes */
+void createAccount(struct Account *acc);
+void deposit(struct Account *acc);
+void withdraw(struct Account *acc);
+void checkBalance(struct Account *acc);
+void saveToFile(struct Account *acc);
+int loadFromFile(struct Account *acc);
+
+int main() {
+    struct Account acc;
+    int choice;
+
+    /* Load existing account if available */
+    if (loadFromFile(&acc)) {
+        printf("Account data loaded successfully.\n");
+    } else {
+        acc.accountNumber = 0;
+        acc.balance = 0.0;
+    }
+
+    do {
+        printf("\n==== BANKING SYSTEM ====\n");
+        printf("1. Create Account\n");
+        printf("2. Deposit\n");
+        printf("3. Withdraw\n");
+        printf("4. Check Balance\n");
+        printf("5. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                createAccount(&acc);
+                saveToFile(&acc);
+                break;
+
+            case 2:
+                deposit(&acc);
+                saveToFile(&acc);
+                break;
+
+            case 3:
+                withdraw(&acc);
+                saveToFile(&acc);
+                break;
+
+            case 4:
+                checkBalance(&acc);
+                break;
+
+            case 5:
+                printf("Thank you for using the banking system.\n");
+                break;
+
+            default:
+                printf("Invalid choice.\n");
+        }
+
+    } while (choice != 5);
+
+    return 0;
+}
+
+/* ---------------- FUNCTIONS ---------------- */
+
+void createAccount(struct Account *acc) {
+    printf("Enter account number: ");
+    scanf("%d", &acc->accountNumber);
+
+    printf("Enter account holder name: ");
+    scanf(" %[^\n]", acc->name);
+
+    acc->balance = 0.0;
+    printf("Account created successfully.\n");
+}
+
+void deposit(struct Account *acc) {
+    float amount;
+    printf("Enter amount to deposit: ");
+    scanf("%f", &amount);
+
+    if (amount > 0) {
+        acc->balance += amount;
+        printf("Deposit successful.\n");
+    } else {
+        printf("Invalid amount.\n");
+    }
+}
+
+void withdraw(struct Account *acc) {
+    float amount;
+    printf("Enter amount to withdraw: ");
+    scanf("%f", &amount);
+
+    if (amount > 0 && amount <= acc->balance) {
+        acc->balance -= amount;
+        printf("Withdrawal successful.\n");
+    } else {
+        printf("Insufficient balance or invalid amount.\n");
+    }
+}
+
+void checkBalance(struct Account *acc) {
+    printf("\nAccount Number: %d\n", acc->accountNumber);
+    printf("Account Holder: %s\n", acc->name);
+    printf("Current Balance: %.2f\n", acc->balance);
+}
+
+void saveToFile(struct Account *acc) {
+    FILE *fp = fopen(FILE_NAME, "wb");
+    if (fp == NULL) {
+        printf("Error saving data.\n");
+        return;
+    }
+
+    fwrite(acc, sizeof(struct Account), 1, fp);
+    fclose(fp);
+}
+
+int loadFromFile(struct Account *acc) {
+    FILE *fp = fopen(FILE_NAME, "rb");
+    if (fp == NULL) {
+        return 0;   // File not found
+    }
+
+    fread(acc, sizeof(struct Account), 1, fp);
+    fclose(fp);
+    return 1;
+}
