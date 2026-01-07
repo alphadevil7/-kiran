@@ -1,0 +1,44 @@
+#include <stdio.h>
+
+int main() {
+    int num, i;
+    int isPrime = 1;
+
+    // Input
+    printf("Enter a number: ");
+    scanf("%d", &num);
+
+    // Even or Odd
+    if (num % 2 == 0)
+        printf("Even number\n");
+    else
+        printf("Odd number\n");
+
+    // Positive, Negative, or Zero
+    if (num > 0)
+        printf("Positive number\n");
+    else if (num < 0)
+        printf("Negative number\n");
+    else
+        printf("Zero\n");
+
+    // Prime Check using loop
+    if (num <= 1) {
+        isPrime = 0;
+    } else {
+        for (i = 2; i <= num / 2; i++) {
+            if (num % i == 0) {
+                isPrime = 0;
+                break;
+            }
+        }
+    }
+
+    // Output prime result
+    if (isPrime)
+        printf("Prime number\n");
+    else
+        printf("Not a prime number\n");
+
+    return 0;
+}
